@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄金挖矿游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #8B4513, #CD853F);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23654321"/><circle cx="20" cy="30" r="2" fill="%23DAA520"/><circle cx="70" cy="20" r="1.5" fill="%23FFD700"/><circle cx="50" cy="60" r="1" fill="%23DAA520"/><circle cx="80" cy="80" r="2.5" fill="%23FFD700"/></svg>') repeat;
+        }
+
+        .ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .level {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .mining-arm {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform-origin: top center;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 200px;
+            background: #8B4513;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .mining-hook {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #696969;
+            border-radius: 50% 50% 50% 0;
+            transform-origin: center;
+        }
+
+        .miner {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 50% 50% 0 0;
+            z-index: 20;
+        }
+
+        .miner::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+            background: #FDBCB4;
+            border-radius: 50%;
+        }
+
+        .gold {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #DAA520;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .gold:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+
+        .rock {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #696969;
+            border-radius: 20%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diamond {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #B9F2FF;
+            transform: rotate(45deg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #87CEEB;
+            box-shadow: 0 0 10px rgba(185, 242, 255, 0.7);
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background: #DAA520;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .upgrade-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+
+        .upgrade-btn {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upgrade-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .particles {
+            position: absolute;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes collect {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .collected {
+            animation: collect 0.5s ease-out forwards;
+        }
+
+        .sparkle {
+            animation: sparkle 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <div class="ui-panel">
+            <div class="score">金币: <span id="goldCount">0</span></div>
+            <div class="level">等级: <span id="level">1</span></div>
+            <div style="font-size: 14px; margin-top: 5px;">经验: <span id="exp">0</span>/100</div>
+        </div>
+
+        <div class="upgrade-panel">
+            <h3 style="margin-bottom: 10px;">升级</h3>
+            <button class="upgrade-btn" id="upgradeSpeed">升级速度 (50金币)</button>
+            <button class="upgrade-btn" id="upgradeRange">扩大范围 (100金币)</button>
+            <button class="upgrade-btn" id="upgradeValue">提升价值 (150金币)</button>
+        </div>
+
+        <div class="miner"></div>
+        <div class="mining-arm" id="miningArm">
+            <div class="mining-hook" id="miningHook"></div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="startMining">开始挖矿</button>
+            <button class="control-btn" id="pauseGame">暂停</button>
+            <button class="control-btn" id="resetGame">重置</button>
+        </div>
+    </div>
+
+    <script>
+        class GoldMiningGame {
+            constructor() {
+                this.gameContainer = document.getElementById('gameContainer');
+                this.miningArm = document.getElementById('miningArm');
+                this.miningHook = document.getElementById('miningHook');
+                this.goldCountElement = document.getElementById('goldCount');
+                this.levelElement = document.getElementById('level');
+                this.expElement = document.getElementById('exp');
+
+                this.goldCount = 0;
+                this.level = 1;
+                this.exp = 0;
+                this.expNeeded = 100;
+                this.miningSpeed = 1;
+                this.miningRange = 200;
+                this.goldValue = 1;
+                this.isGameRunning = false;
+                this.items = [];
+
+                this.init();
+            }
+
+            init() {
+                this.generateItems();
+                this.bindEvents();
+                this.startAutoMining();
+            }
+
+            generateItems() {
+                this.items = [];
+
+                for (let i = 0; i < 15; i++) {
+                    this.createGold();
+                }
+
+                for (let i = 0; i < 8; i++) {
+                    this.createRock();
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    this.createDiamond();
+                }
+            }
+
+            createGold() {
+                const gold = document.createElement('div');
+                gold.className = 'gold sparkle';
+                gold.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+                gold.style.top = (Math.random() * (window.innerHeight - 300) + 200) + 'px';
+
+                gold.addEventListener('click', () => this.collectItem(gold, 10 * this.goldValue, 'gold'));
+
+                this.gameContainer.appendChild(gold);
+                this.items.push(gold);
+            }
+
+            createRock() {
+                const rock = document.createElement('div');
+                rock.className = 'rock';
+                rock.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+                rock.style.top = (Math.random() * (window.innerHeight - 300) + 200) + 'px';
+
+                rock.addEventListener('click', () => this.collectItem(rock, 2 * this.goldValue, 'rock'));
+
+                this.gameContainer.appendChild(rock);
+                this.items.push(rock);
+            }
+
+            createDiamond() {
+                const diamond = document.createElement('div');
+                diamond.className = 'diamond sparkle';
+                diamond.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+                diamond.style.top = (Math.random() * (window.innerHeight - 300) + 200) + 'px';
+
+                diamond.addEventListener('click', () => this.collectItem(diamond, 50 * this.goldValue, 'diamond'));
+
+                this.gameContainer.appendChild(diamond);
+                this.items.push(diamond);
+            }
+
+            collectItem(item, value, type) {
+                if (!this.isGameRunning) return;
+
+                const rect = item.getBoundingClientRect();
+                const distance = this.calculateDistance(rect.left + rect.width/2, rect.top + rect.height/2);
+
+                if (distance <= this.miningRange) {
+                    this.animateMiningArm(rect.left + rect.width/2, rect.top + rect.height/2);
+
+                    setTimeout(() => {
+                        item.classList.add('collected');
+                        this.addGold(value);
+                        this.addExp(type === 'diamond' ? 15 : type === 'gold' ? 10 : 5);
+                        this.createParticles(rect.left + rect.width/2, rect.top + rect.height/2, type);
+
+                        setTimeout(() => {
+                            if (item.parentNode) {
+                                item.parentNode.removeChild(item);
+                            }
+                            this.items = this.items.filter(i => i !== item);
+
+                            if (type === 'gold') this.createGold();
+                            else if (type === 'rock') this.createRock();
+                            else if (type === 'diamond') this.createDiamond();
+                        }, 500);
+                    }, 300);
+                }
+            }
+
+            calculateDistance(x, y) {
+                const armRect = this.miningArm.getBoundingClientRect();
+                const armX = armRect.left + armRect.width/2;
+                const armY = armRect.top + armRect.height;
+
+                return Math.sqrt(Math.pow(x - armX, 2) + Math.pow(y - armY, 2));
+            }
+
+            animateMiningArm(targetX, targetY) {
+                const containerRect = this.gameContainer.getBoundingClientRect();
+                const armRect = this.miningArm.getBoundingClientRect();
+                const armCenterX = armRect.left + armRect.width/2 - containerRect.left;
+                const armTopY = armRect.top - containerRect.top;
+
+                const deltaX = targetX - armCenterX;
+                const deltaY = targetY - armTopY;
+                const angle = Math.atan2(deltaX, deltaY) * (180 / Math.PI);
+
+                this.miningArm.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+                setTimeout(() => {
+                    this.miningArm.style.transform = 'translateX(-50%) rotate(0deg)';
+                }, 600);
+            }
+
+            createParticles(x, y, type) {
+                const colors = {
+                    gold: ['#FFD700', '#DAA520', '#FFA500'],
+                    diamond: ['#B9F2FF', '#87CEEB', '#00BFFF'],
+                    rock: ['#696969', '#A9A9A9', '#778899']
+                };
+
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particles';
+                    particle.style.position = 'absolute';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.width = '4px';
+                    particle.style.height = '4px';
+                    particle.style.background = colors[type][Math.floor(Math.random() * colors[type].length)];
+                    particle.style.borderRadius = '50%';
+                    particle.style.pointerEvents = 'none';
+
+                    this.gameContainer.appendChild(particle);
+
+                    const angle = (i / 8) * Math.PI * 2;
+                    const velocity = 50 + Math.random() * 50;
+                    const vx = Math.cos(angle) * velocity;
+                    const vy = Math.sin(angle) * velocity;
+
+                    let particleX = x;
+                    let particleY = y;
+                    let opacity = 1;
+
+                    const animateParticle = () => {
+                        particleX += vx * 0.02;
+                        particleY += vy * 0.02;
+                        opacity -= 0.02;
+
+                        particle.style.left = particleX + 'px';
+                        particle.style.top = particleY + 'px';
+                        particle.style.opacity = opacity;
+
+                        if (opacity > 0) {
+                            requestAnimationFrame(animateParticle);
+                        } else {
+                            particle.remove();
+                        }
+                    };
+
+                    requestAnimationFrame(animateParticle);
+                }
+            }
+
+            addGold(amount) {
+                this.goldCount += amount;
+                this.goldCountElement.textContent = this.goldCount;
+            }
+
+            addExp(amount) {
+                this.exp += amount;
+                if (this.exp >= this.expNeeded) {
+                    this.levelUp();
+                }
+                this.expElement.textContent = this.exp;
+            }
+
+            levelUp() {
+                this.level++;
+                this.exp = 0;
+                this.expNeeded = Math.floor(this.expNeeded * 1.5);
+                this.levelElement.textContent = this.level;
+                this.expElement.textContent = `${this.exp}/${this.expNeeded}`;
+
+                this.miningSpeed += 0.1;
+                this.miningRange += 10;
+
+                this.showLevelUpEffect();
+            }
+
+            showLevelUpEffect() {
+                const levelUpText = document.createElement('div');
+                levelUpText.textContent = '升级!';
+                levelUpText.style.position = 'absolute';
+                levelUpText.style.top = '50%';
+                levelUpText.style.left = '50%';
+                levelUpText.style.transform = 'translate(-50%, -50%)';
+                levelUpText.style.fontSize = '48px';
+                levelUpText.style.color = '#FFD700';
+                levelUpText.style.fontWeight = 'bold';
+                levelUpText.style.zIndex = '1000';
+                levelUpText.style.animation = 'collect 2s ease-out forwards';
+
+                this.gameContainer.appendChild(levelUpText);
+
+                setTimeout(() => levelUpText.remove(), 2000);
+            }
+
+            startAutoMining() {
+                this.isGameRunning = true;
+                this.autoMiningInterval = setInterval(() => {
+                    if (this.isGameRunning && this.items.length > 0) {
+                        const randomItem = this.items[Math.floor(Math.random() * this.items.length)];
+                        if (randomItem && randomItem.parentNode) {
+                            randomItem.click();
+                        }
+                    }
+                }, 2000 / this.miningSpeed);
+            }
+
+            bindEvents() {
+                document.getElementById('startMining').addEventListener('click', () => {
+                    if (!this.isGameRunning) {
+                        this.startAutoMining();
+                    }
+                });
+
+                document.getElementById('pauseGame').addEventListener('click', () => {
+                    this.isGameRunning = !this.isGameRunning;
+                    if (!this.isGameRunning && this.autoMiningInterval) {
+                        clearInterval(this.autoMiningInterval);
+                    } else if (this.isGameRunning) {
+                        this.startAutoMining();
+                    }
+                });
+
+                document.getElementById('resetGame').addEventListener('click', () => {
+                    this.resetGame();
+                });
+
+                document.getElementById('upgradeSpeed').addEventListener('click', () => {
+                    if (this.goldCount >= 50) {
+                        this.goldCount -= 50;
+                        this.miningSpeed += 0.2;
+                        this.goldCountElement.textContent = this.goldCount;
+                        if (this.autoMiningInterval) {
+                            clearInterval(this.autoMiningInterval);
+                            this.startAutoMining();
+                        }
+                    }
+                });
+
+                document.getElementById('upgradeRange').addEventListener('click', () => {
+                    if (this.goldCount >= 100) {
+                        this.goldCount -= 100;
+                        this.miningRange += 30;
+                        this.goldCountElement.textContent = this.goldCount;
+                    }
+                });
+
+                document.getElementById('upgradeValue').addEventListener('click', () => {
+                    if (this.goldCount >= 150) {
+                        this.goldCount -= 150;
+                        this.goldValue += 0.5;
+                        this.goldCountElement.textContent = this.goldCount;
+                    }
+                });
+            }
+
+            resetGame() {
+                if (this.autoMiningInterval) {
+                    clearInterval(this.autoMiningInterval);
+                }
+
+                this.items.forEach(item => {
+                    if (item.parentNode) {
+                        item.parentNode.removeChild(item);
+                    }
+                });
+
+                this.goldCount = 0;
+                this.level = 1;
+                this.exp = 0;
+                this.expNeeded = 100;
+                this.miningSpeed = 1;
+                this.miningRange = 200;
+                this.goldValue = 1;
+                this.isGameRunning = false;
+
+                this.goldCountElement.textContent = this.goldCount;
+                this.levelElement.textContent = this.level;
+                this.expElement.textContent = this.exp;
+
+                this.generateItems();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            new GoldMiningGame();
+        });
+    </script>
+</body>
+</html>

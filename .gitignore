@@ -1,0 +1,29 @@
+# 项目文件
+# *.html  # 注释掉，我们要追踪HTML文件
+
+# 系统文件
+.DS_Store
+.CFUserTextEncoding
+
+# IDE 配置
+.vscode/
+.claude/
+.claude.json
+.claude.json.backup
+
+# 用户配置和缓存
+.npm/
+.Trash/
+.zsh_history
+.zsh_sessions/
+.gitconfig
+
+# 个人文件夹
+Desktop/
+Documents/
+Downloads/
+Library/
+Movies/
+Music/
+Pictures/
+Public/

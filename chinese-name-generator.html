@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中文取名神器 - 专业智能起名工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .name-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .name-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .name-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .name-card.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .name-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .name-card.selected .name-text {
+            color: white;
+        }
+
+        .name-score {
+            font-size: 1.2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .name-card.selected .name-score {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .name-meaning {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .name-card.selected .name-meaning {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .favorite-btn.favorited {
+            color: #ff6b6b;
+        }
+
+        .analysis-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .analysis-content {
+            display: none;
+        }
+
+        .analysis-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .analysis-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .analysis-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .analysis-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .favorites-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .favorite-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .favorite-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .remove-favorite {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .premium-notice {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .premium-notice h3 {
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .name-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-section, .results-section, .analysis-section, .favorites-section {
+                padding: 20px;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎋 中文取名神器</h1>
+        <p>基于传统文化的智能起名工具，为您的宝宝取一个好名字</p>
+    </div>
+
+    <div class="container">
+        <div class="input-section">
+            <h2 class="section-title">📝 基本信息</h2>
+
+            <div class="form-group">
+                <label for="surname">姓氏 *</label>
+                <input type="text" id="surname" placeholder="请输入姓氏" maxlength="2" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="gender">性别</label>
+                    <select id="gender">
+                        <option value="male">男孩</option>
+                        <option value="female">女孩</option>
+                        <option value="neutral">中性</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="nameLength">名字长度</label>
+                    <select id="nameLength">
+                        <option value="1">单字名</option>
+                        <option value="2" selected>双字名</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="birthYear">出生年份</label>
+                    <select id="birthYear">
+                        <option value="">选择年份</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="zodiac">生肖</label>
+                    <select id="zodiac">
+                        <option value="">自动判断</option>
+                        <option value="鼠">鼠</option>
+                        <option value="牛">牛</option>
+                        <option value="虎">虎</option>
+                        <option value="兔">兔</option>
+                        <option value="龙">龙</option>
+                        <option value="蛇">蛇</option>
+                        <option value="马">马</option>
+                        <option value="羊">羊</option>
+                        <option value="猴">猴</option>
+                        <option value="鸡">鸡</option>
+                        <option value="狗">狗</option>
+                        <option value="猪">猪</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="preferences">期望寓意</label>
+                <select id="preferences">
+                    <option value="">随机生成</option>
+                    <option value="intelligent">聪明智慧</option>
+                    <option value="brave">勇敢坚强</option>
+                    <option value="gentle">温和善良</option>
+                    <option value="beautiful">美丽优雅</option>
+                    <option value="successful">事业有成</option>
+                    <option value="healthy">健康平安</option>
+                    <option value="noble">高贵典雅</option>
+                    <option value="creative">富有创意</option>
+                </select>
+            </div>
+
+            <button class="generate-btn" onclick="generateNames()">
+                🎯 智能生成名字
+            </button>
+
+            <div class="premium-notice">
+                <h3>💎 专业取名服务</h3>
+                <p>需要更专业的取名咨询？<br>联系我们获得一对一起名服务</p>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2 class="section-title">✨ 推荐名字</h2>
+
+            <div id="loadingState" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>正在为您精心挑选好名字...</p>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">🎋</div>
+                <p>请填写基本信息，点击生成名字</p>
+            </div>
+
+            <div id="nameResults" class="name-grid" style="display: none;"></div>
+        </div>
+
+        <div class="analysis-section">
+            <h2 class="section-title">📊 名字详细解析</h2>
+
+            <div id="analysisContent" class="analysis-content">
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <h4>综合评分</h4>
+                        <div class="analysis-value" id="totalScore">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="totalProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="analysis-item">
+                        <h4>音律美感</h4>
+                        <div class="analysis-value" id="soundScore">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="soundProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="analysis-item">
+                        <h4>寓意内涵</h4>
+                        <div class="analysis-value" id="meaningScore">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="meaningProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="analysis-item">
+                        <h4>五行匹配</h4>
+                        <div class="analysis-value" id="elementScore">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="elementProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📜 名字释义</h4>
+                    <div id="nameExplanation">选择一个名字查看详细释义</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="favorites-section">
+            <h2 class="section-title">❤️ 收藏的名字</h2>
+
+            <div id="favoritesEmpty" class="empty-state">
+                <div class="empty-icon">💝</div>
+                <p>暂无收藏的名字，点击名字卡片右上角的心形图标收藏</p>
+            </div>
+
+            <div id="favoritesGrid" class="favorites-grid" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="contact-info">
+        <h3>📞 专业取名咨询</h3>
+        <p>微信：your_wechat_id | 电话：138-0000-0000</p>
+        <p>🎁 专业起名师一对一服务，满意为止</p>
+    </div>
+
+    <script>
+        // 数据库
+        const nameDatabase = {
+            male: {
+                first: ['志', '华', '明', '伟', '强', '军', '文', '德', '勇', '建', '国', '海', '山', '天', '正', '永', '龙', '云', '博', '宇'],
+                second: ['强', '华', '军', '伟', '明', '峰', '杰', '辉', '鹏', '涛', '磊', '超', '飞', '宇', '龙', '斌', '刚', '亮', '彬', '森']
+            },
+            female: {
+                first: ['美', '雅', '丽', '静', '娟', '秀', '慧', '敏', '芳', '玲', '燕', '红', '霞', '琳', '婷', '萍', '倩', '蓉', '莉', '洁'],
+                second: ['丽', '华', '雅', '静', '燕', '琳', '萍', '霞', '娟', '芳', '玲', '敏', '婷', '红', '倩', '蓉', '洁', '莉', '颖', '慧']
+            },
+            neutral: {
+                first: ['安', '乐', '平', '和', '康', '宁', '泽', '瑞', '祥', '福', '嘉', '悦', '欣', '琪', '瑶', '晨', '阳', '雨', '林', '若'],
+                second: ['安', '乐', '康', '宁', '祥', '瑞', '泽', '嘉', '悦', '欣', '琪', '瑶', '晨', '阳', '雨', '林', '若', '然', '之', '言']
+            }
+        };
+
+        const meanings = {
+            '志': '志向、理想',
+            '华': '光彩、才华',
+            '明': '光明、聪明',
+            '伟': '伟大、宏伟',
+            '强': '强壮、坚强',
+            '美': '美丽、美好',
+            '雅': '优雅、文雅',
+            '丽': '美丽、秀丽',
+            '静': '安静、文静',
+            '慧': '智慧、聪慧',
+            '安': '平安、安宁',
+            '乐': '快乐、喜悦',
+            '平': '平安、和平',
+            '和': '和谐、温和',
+            '康': '健康、安康'
+        };
+
+        const elements = ['金', '木', '水', '火', '土'];
+        const zodiacYears = {
+            2024: '龙', 2023: '兔', 2022: '虎', 2021: '牛', 2020: '鼠',
+            2019: '猪', 2018: '狗', 2017: '鸡', 2016: '猴', 2015: '羊',
+            2014: '马', 2013: '蛇', 2012: '龙', 2011: '兔', 2010: '虎'
+        };
+
+        let favorites = JSON.parse(localStorage.getItem('favoriteNames')) || [];
+        let selectedNameCard = null;
+
+        // 初始化
+        window.onload = function() {
+            initializeYearOptions();
+            updateFavoritesDisplay();
+        };
+
+        function initializeYearOptions() {
+            const yearSelect = document.getElementById('birthYear');
+            const currentYear = new Date().getFullYear();
+
+            for (let year = currentYear; year >= currentYear - 50; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + '年';
+                yearSelect.appendChild(option);
+            }
+        }
+
+        function generateNames() {
+            const surname = document.getElementById('surname').value.trim();
+            if (!surname) {
+                alert('请输入姓氏');
+                return;
+            }
+
+            const gender = document.getElementById('gender').value;
+            const nameLength = parseInt(document.getElementById('nameLength').value);
+            const birthYear = document.getElementById('birthYear').value;
+            const preferences = document.getElementById('preferences').value;
+
+            showLoading();
+
+            setTimeout(() => {
+                const names = generateNameList(surname, gender, nameLength, birthYear, preferences);
+                displayNames(names);
+                hideLoading();
+            }, 1500);
+        }
+
+        function generateNameList(surname, gender, nameLength, birthYear, preferences) {
+            const names = [];
+            const database = nameDatabase[gender] || nameDatabase.neutral;
+
+            for (let i = 0; i < 6; i++) {
+                let name = surname;
+
+                if (nameLength === 1) {
+                    const char = database.first[Math.floor(Math.random() * database.first.length)];
+                    name += char;
+                } else {
+                    const firstChar = database.first[Math.floor(Math.random() * database.first.length)];
+                    const secondChar = database.second[Math.floor(Math.random() * database.second.length)];
+                    name += firstChar + secondChar;
+                }
+
+                const analysis = analyzeNameScore(name, gender, birthYear);
+
+                names.push({
+                    fullName: name,
+                    score: analysis.total,
+                    meaning: generateMeaning(name.substr(1)),
+                    analysis: analysis
+                });
+            }
+
+            return names.sort((a, b) => b.score - a.score);
+        }
+
+        function analyzeNameScore(name, gender, birthYear) {
+            const soundScore = Math.floor(Math.random() * 30) + 70;
+            const meaningScore = Math.floor(Math.random() * 25) + 75;
+            const elementScore = Math.floor(Math.random() * 20) + 80;
+            const total = Math.floor((soundScore + meaningScore + elementScore) / 3);
+
+            return {
+                total: total,
+                sound: soundScore,
+                meaning: meaningScore,
+                element: elementScore
+            };
+        }
+
+        function generateMeaning(nameChars) {
+            let meaning = '';
+            for (let char of nameChars) {
+                if (meanings[char]) {
+                    meaning += meanings[char] + '，';
+                }
+            }
+            return meaning.slice(0, -1) || '寓意美好，前程似锦';
+        }
+
+        function displayNames(names) {
+            const resultsContainer = document.getElementById('nameResults');
+            const emptyState = document.getElementById('emptyState');
+
+            resultsContainer.innerHTML = '';
+
+            names.forEach((nameData, index) => {
+                const nameCard = document.createElement('div');
+                nameCard.className = 'name-card';
+                nameCard.dataset.index = index;
+
+                const isFavorited = favorites.some(fav => fav.fullName === nameData.fullName);
+
+                nameCard.innerHTML = `
+                    <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite(event, ${index})">
+                        ${isFavorited ? '❤️' : '🤍'}
+                    </button>
+                    <div class="name-text">${nameData.fullName}</div>
+                    <div class="name-score">${nameData.score}分</div>
+                    <div class="name-meaning">${nameData.meaning}</div>
+                `;
+
+                nameCard.onclick = (e) => {
+                    if (!e.target.classList.contains('favorite-btn')) {
+                        selectName(nameCard, nameData);
+                    }
+                };
+
+                resultsContainer.appendChild(nameCard);
+            });
+
+            emptyState.style.display = 'none';
+            resultsContainer.style.display = 'grid';
+
+            // 存储当前生成的名字数据
+            window.currentNames = names;
+        }
+
+        function selectName(cardElement, nameData) {
+            // 移除之前选中的状态
+            if (selectedNameCard) {
+                selectedNameCard.classList.remove('selected');
+            }
+
+            // 设置新的选中状态
+            cardElement.classList.add('selected');
+            selectedNameCard = cardElement;
+
+            // 显示详细分析
+            showNameAnalysis(nameData);
+        }
+
+        function showNameAnalysis(nameData) {
+            const analysisContent = document.getElementById('analysisContent');
+
+            // 更新评分
+            document.getElementById('totalScore').textContent = nameData.analysis.total + '分';
+            document.getElementById('soundScore').textContent = nameData.analysis.sound + '分';
+            document.getElementById('meaningScore').textContent = nameData.analysis.meaning + '分';
+            document.getElementById('elementScore').textContent = nameData.analysis.element + '分';
+
+            // 更新进度条
+            document.getElementById('totalProgress').style.width = nameData.analysis.total + '%';
+            document.getElementById('soundProgress').style.width = nameData.analysis.sound + '%';
+            document.getElementById('meaningProgress').style.width = nameData.analysis.meaning + '%';
+            document.getElementById('elementProgress').style.width = nameData.analysis.element + '%';
+
+            // 更新释义
+            const explanation = generateDetailedExplanation(nameData);
+            document.getElementById('nameExplanation').innerHTML = explanation;
+
+            analysisContent.classList.add('active');
+        }
+
+        function generateDetailedExplanation(nameData) {
+            return `
+                <h5 style="color: #667eea; margin-bottom: 10px;">${nameData.fullName}</h5>
+                <p style="margin-bottom: 15px;"><strong>寓意：</strong>${nameData.meaning}</p>
+                <p style="margin-bottom: 15px;"><strong>音律分析：</strong>声调搭配和谐，朗朗上口，易于记忆和传播。</p>
+                <p style="margin-bottom: 15px;"><strong>文化内涵：</strong>名字蕴含深厚的文化底蕴，体现了中华传统文化的智慧。</p>
+                <p><strong>建议：</strong>这是一个寓意美好、音律优美的名字，适合作为正式姓名使用。</p>
+            `;
+        }
+
+        function toggleFavorite(event, index) {
+            event.stopPropagation();
+
+            if (!window.currentNames) return;
+
+            const nameData = window.currentNames[index];
+            const favoriteBtn = event.target;
+
+            const existingIndex = favorites.findIndex(fav => fav.fullName === nameData.fullName);
+
+            if (existingIndex > -1) {
+                // 移除收藏
+                favorites.splice(existingIndex, 1);
+                favoriteBtn.textContent = '🤍';
+                favoriteBtn.classList.remove('favorited');
+            } else {
+                // 添加收藏
+                favorites.push(nameData);
+                favoriteBtn.textContent = '❤️';
+                favoriteBtn.classList.add('favorited');
+            }
+
+            localStorage.setItem('favoriteNames', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+        }
+
+        function updateFavoritesDisplay() {
+            const favoritesGrid = document.getElementById('favoritesGrid');
+            const favoritesEmpty = document.getElementById('favoritesEmpty');
+
+            if (favorites.length === 0) {
+                favoritesEmpty.style.display = 'block';
+                favoritesGrid.style.display = 'none';
+                return;
+            }
+
+            favoritesEmpty.style.display = 'none';
+            favoritesGrid.style.display = 'grid';
+
+            favoritesGrid.innerHTML = '';
+
+            favorites.forEach((nameData, index) => {
+                const favoriteItem = document.createElement('div');
+                favoriteItem.className = 'favorite-item';
+                favoriteItem.innerHTML = `
+                    <button class="remove-favorite" onclick="removeFavorite(${index})">×</button>
+                    <div class="favorite-name">${nameData.fullName}</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">${nameData.score}分</div>
+                `;
+
+                favoriteItem.onclick = () => {
+                    if (window.currentNames) {
+                        const matchingCard = document.querySelector(`[data-index]`);
+                        if (matchingCard) {
+                            selectName(matchingCard, nameData);
+                        }
+                    }
+                    showNameAnalysis(nameData);
+                };
+
+                favoritesGrid.appendChild(favoriteItem);
+            });
+        }
+
+        function removeFavorite(index) {
+            favorites.splice(index, 1);
+            localStorage.setItem('favoriteNames', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+
+            // 更新当前显示的收藏状态
+            if (window.currentNames) {
+                const nameCards = document.querySelectorAll('.name-card');
+                nameCards.forEach(card => {
+                    const favoriteBtn = card.querySelector('.favorite-btn');
+                    const nameText = card.querySelector('.name-text').textContent;
+                    const isFavorited = favorites.some(fav => fav.fullName === nameText);
+
+                    favoriteBtn.textContent = isFavorited ? '❤️' : '🤍';
+                    favoriteBtn.classList.toggle('favorited', isFavorited);
+                });
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('nameResults').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        // 自动更新生肖
+        document.getElementById('birthYear').addEventListener('change', function() {
+            const year = this.value;
+            const zodiacSelect = document.getElementById('zodiac');
+
+            if (year && zodiacYears[year]) {
+                zodiacSelect.value = zodiacYears[year];
+            }
+        });
+    </script>
+</body>
+</html>

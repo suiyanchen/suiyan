@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI解梦师 - 探索潜意识的奥秘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #2d1b69 0%, #11998e 50%, #38ef7d 100%);
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="30" r="0.5" fill="rgba(255,255,255,0.2)" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="70" r="1.5" fill="rgba(255,255,255,0.15)" opacity="0.4"><animate attributeName="opacity" values="0.4;0.9;0.4" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient 3s ease-in-out infinite;
+        }
+
+        @keyframes gradient {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(90deg); }
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(142, 45, 226, 0.1), transparent);
+            animation: rotate 6s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #2d1b69;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .dream-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .dream-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+            background: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .select-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            background: white;
+        }
+
+        .emotion-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .emotion-btn {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .emotion-btn:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .emotion-btn.selected {
+            border-color: #4ecdc4;
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .analyze-btn:hover::before {
+            left: 100%;
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .mystical-loader {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 3px solid rgba(78, 205, 196, 0.3);
+            border-top: 3px solid #4ecdc4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .analysis-result {
+            display: none;
+        }
+
+        .analysis-result.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-tab {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: #4ecdc4;
+            color: white;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .interpretation-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4ecdc4;
+        }
+
+        .interpretation-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d1b69;
+        }
+
+        .interpretation-text {
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .dream-symbols {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .symbol-tag {
+            background: #4ecdc4;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .emotion-analysis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .emotion-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .emotion-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4ecdc4;
+            margin-bottom: 5px;
+        }
+
+        .emotion-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle {
+            fill: none;
+            stroke: #e1e5e9;
+            stroke-width: 4;
+        }
+
+        .progress-circle.filled {
+            stroke: #4ecdc4;
+            stroke-dasharray: 157;
+            stroke-dashoffset: 157;
+            animation: fillProgress 1s ease-out forwards;
+        }
+
+        @keyframes fillProgress {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .dream-diary-section {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 30px;
+        }
+
+        .diary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .diary-entry {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diary-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .diary-entry::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4ecdc4, #667eea);
+        }
+
+        .diary-date {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .diary-preview {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .diary-emotion {
+            display: inline-block;
+            background: #4ecdc4;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .emotion-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .input-section, .results-section, .dream-diary-section {
+                padding: 20px;
+            }
+
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-symbol {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-symbol" style="top: 10%; left: 10%; animation-delay: 0s;">🌙</div>
+        <div class="floating-symbol" style="top: 20%; right: 15%; animation-delay: 2s;">⭐</div>
+        <div class="floating-symbol" style="top: 60%; left: 5%; animation-delay: 4s;">🔮</div>
+        <div class="floating-symbol" style="top: 80%; right: 10%; animation-delay: 6s;">✨</div>
+        <div class="floating-symbol" style="top: 40%; left: 80%; animation-delay: 1s;">🌟</div>
+    </div>
+
+    <div class="header">
+        <h1>🔮 AI解梦师</h1>
+        <p>探索潜意识的奥秘，解读梦境的深层含义</p>
+    </div>
+
+    <div class="container">
+        <div class="input-section">
+            <h2 class="section-title">📖 描述你的梦境</h2>
+
+            <div class="form-group">
+                <label for="dreamDescription">请详细描述你的梦境：</label>
+                <textarea
+                    id="dreamDescription"
+                    class="dream-input"
+                    placeholder="请尽可能详细地描述你的梦境...包括梦中的人物、地点、情节、感受等。例如：我梦见自己在一座古老的城堡里，遇到了一只会说话的猫...">
+                </textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dreamType">梦境类型：</label>
+                    <select id="dreamType" class="select-input">
+                        <option value="">选择梦境类型</option>
+                        <option value="lucid">清醒梦</option>
+                        <option value="nightmare">噩梦</option>
+                        <option value="prophetic">预知梦</option>
+                        <option value="recurring">重复梦</option>
+                        <option value="healing">治愈梦</option>
+                        <option value="adventure">冒险梦</option>
+                        <option value="relationship">情感梦</option>
+                        <option value="work">工作梦</option>
+                        <option value="flying">飞行梦</option>
+                        <option value="falling">坠落梦</option>
+                        <option value="chase">追逐梦</option>
+                        <option value="death">死亡梦</option>
+                        <option value="animal">动物梦</option>
+                        <option value="water">水相关梦</option>
+                        <option value="fire">火相关梦</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="dreamClarity">梦境清晰度：</label>
+                    <select id="dreamClarity" class="select-input">
+                        <option value="vague">模糊不清</option>
+                        <option value="partial">部分清晰</option>
+                        <option value="clear">比较清晰</option>
+                        <option value="vivid">非常清晰</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>梦中的主要情感：</label>
+                <div class="emotion-selector">
+                    <div class="emotion-btn" data-emotion="joy">😊 快乐</div>
+                    <div class="emotion-btn" data-emotion="fear">😨 恐惧</div>
+                    <div class="emotion-btn" data-emotion="sadness">😢 悲伤</div>
+                    <div class="emotion-btn" data-emotion="anger">😠 愤怒</div>
+                    <div class="emotion-btn" data-emotion="surprise">😲 惊讶</div>
+                    <div class="emotion-btn" data-emotion="calm">😌 平静</div>
+                    <div class="emotion-btn" data-emotion="excitement">🤩 兴奋</div>
+                    <div class="emotion-btn" data-emotion="confusion">😵 困惑</div>
+                </div>
+            </div>
+
+            <button class="analyze-btn" onclick="analyzeDream()">
+                🔮 开始解梦分析
+            </button>
+        </div>
+
+        <div class="results-section">
+            <h2 class="section-title">✨ 解梦结果</h2>
+
+            <div class="loading-state" id="loadingState">
+                <div class="mystical-loader"></div>
+                <p style="color: #666; font-size: 1.1rem;">AI解梦师正在分析你的潜意识...</p>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">🌙</div>
+                <p>请描述你的梦境，让AI为你解读其中的奥秘</p>
+            </div>
+
+            <div class="analysis-result" id="analysisResult">
+                <div class="result-tab">
+                    <button class="tab-btn active" onclick="switchTab('ai')">AI智能解析</button>
+                    <button class="tab-btn" onclick="switchTab('traditional')">传统解梦</button>
+                    <button class="tab-btn" onclick="switchTab('psychology')">心理学解读</button>
+                </div>
+
+                <div class="tab-content active" id="aiTab">
+                    <div class="interpretation-card">
+                        <div class="interpretation-title">🤖 AI智能解析</div>
+                        <div class="interpretation-text" id="aiInterpretation">
+                            基于现代心理学和大数据分析，您的梦境显示...
+                        </div>
+                        <div class="dream-symbols" id="dreamSymbols">
+                            <span class="symbol-tag">符号分析</span>
+                        </div>
+                    </div>
+
+                    <div class="emotion-analysis">
+                        <div class="emotion-item">
+                            <div class="emotion-score" id="positiveScore">85%</div>
+                            <div class="emotion-label">正面情绪</div>
+                        </div>
+                        <div class="emotion-item">
+                            <div class="emotion-score" id="stressScore">25%</div>
+                            <div class="emotion-label">压力指数</div>
+                        </div>
+                        <div class="emotion-item">
+                            <div class="emotion-score" id="mysteryScore">60%</div>
+                            <div class="emotion-label">神秘指数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="traditionalTab">
+                    <div class="interpretation-card">
+                        <div class="interpretation-title">📜 传统周公解梦</div>
+                        <div class="interpretation-text" id="traditionalInterpretation">
+                            根据古代周公解梦的智慧...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="psychologyTab">
+                    <div class="interpretation-card">
+                        <div class="interpretation-title">🧠 现代心理学解读</div>
+                        <div class="interpretation-text" id="psychologyInterpretation">
+                            从弗洛伊德和荣格的梦境理论角度分析...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dream-diary-section">
+            <h2 class="section-title">📚 梦境日记</h2>
+
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDreams">0</div>
+                    <div class="stat-label">记录梦境</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="happyDreams">0</div>
+                    <div class="stat-label">快乐梦境</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="nightmares">0</div>
+                    <div class="stat-label">噩梦次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="lucidDreams">0</div>
+                    <div class="stat-label">清醒梦</div>
+                </div>
+            </div>
+
+            <div id="diaryEmpty" class="empty-state" style="margin-top: 30px;">
+                <div class="empty-icon">📖</div>
+                <p>还没有记录任何梦境，开始你的第一次解梦吧！</p>
+            </div>
+
+            <div class="diary-grid" id="diaryGrid" style="display: none;">
+                <!-- 梦境日记条目将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DreamAnalyzer {
+            constructor() {
+                this.dreamHistory = JSON.parse(localStorage.getItem('dreamHistory')) || [];
+                this.selectedEmotion = null;
+                this.symbols = {
+                    '水': '象征情感和潜意识',
+                    '火': '代表激情和能量',
+                    '动物': '反映本能和直觉',
+                    '飞行': '寻求自由和超越',
+                    '死亡': '象征重生和转变',
+                    '房子': '代表自我和安全感',
+                    '追逐': '逃避现实问题',
+                    '考试': '自我评价和压力',
+                    '亲人': '情感联系和依恋',
+                    '黑暗': '未知和恐惧',
+                    '光明': '希望和智慧',
+                    '坠落': '失控和不安全感'
+                };
+
+                this.traditionalMeanings = {
+                    '水': '财运亨通，感情顺利',
+                    '火': '事业兴旺，但需防小人',
+                    '蛇': '有贵人相助，财运佳',
+                    '龙': '大吉大利，事业有成',
+                    '猫': '小心谨慎，防范小人',
+                    '狗': '朋友运佳，有贵人',
+                    '死亡': '长寿健康，好运来临',
+                    '飞行': '事业腾飞，前程似锦',
+                    '房子': '家庭和睦，财运旺盛',
+                    '考试': '学业进步，工作顺利'
+                };
+
+                this.psychologyMeanings = {
+                    '水': '潜意识情感的流动，可能反映内心的情感状态',
+                    '火': '激情和能量的象征，可能代表强烈的欲望或愤怒',
+                    '飞行': '对自由的渴望，或者想要摆脱现实束缚的心理',
+                    '追逐': '可能代表逃避现实中的某些问题或责任',
+                    '死亡': '象征生活中某个阶段的结束和新开始',
+                    '动物': '本能和原始欲望的体现，连接内在野性',
+                    '房子': '自我意识和人格结构的象征',
+                    '考试': '自我评价和对能力的担忧'
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateStats();
+                this.displayDreamHistory();
+            }
+
+            bindEvents() {
+                // 情感选择器事件
+                document.querySelectorAll('.emotion-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
+                        e.target.classList.add('selected');
+                        this.selectedEmotion = e.target.dataset.emotion;
+                    });
+                });
+            }
+
+            analyzeDream() {
+                const description = document.getElementById('dreamDescription').value.trim();
+                const dreamType = document.getElementById('dreamType').value;
+                const clarity = document.getElementById('dreamClarity').value;
+
+                if (!description) {
+                    alert('请先描述你的梦境');
+                    return;
+                }
+
+                this.showLoading();
+
+                // 模拟AI分析过程
+                setTimeout(() => {
+                    const analysis = this.generateAnalysis(description, dreamType, clarity);
+                    this.displayAnalysis(analysis);
+                    this.saveDreamToHistory(description, dreamType, clarity, analysis);
+                    this.hideLoading();
+                }, 2000);
+            }
+
+            generateAnalysis(description, dreamType, clarity) {
+                const symbols = this.extractSymbols(description);
+                const emotion = this.selectedEmotion || 'neutral';
+
+                return {
+                    aiInterpretation: this.generateAIInterpretation(description, symbols, emotion),
+                    traditionalInterpretation: this.generateTraditionalInterpretation(symbols),
+                    psychologyInterpretation: this.generatePsychologyInterpretation(symbols, emotion),
+                    symbols: symbols,
+                    emotionScores: this.calculateEmotionScores(emotion, dreamType),
+                    dreamType: dreamType,
+                    clarity: clarity
+                };
+            }
+
+            extractSymbols(description) {
+                const found = [];
+                Object.keys(this.symbols).forEach(symbol => {
+                    if (description.includes(symbol) ||
+                        this.containsSimilarWord(description, symbol)) {
+                        found.push(symbol);
+                    }
+                });
+                return found.length > 0 ? found : ['神秘符号'];
+            }
+
+            containsSimilarWord(text, symbol) {
+                const similarWords = {
+                    '水': ['河', '海', '湖', '雨', '泪', '游泳', '洗澡', '喝水'],
+                    '火': ['燃烧', '烟', '热', '太阳', '光'],
+                    '动物': ['猫', '狗', '鸟', '鱼', '蛇', '龙', '虎', '狼'],
+                    '飞行': ['飞', '天空', '云', '翅膀'],
+                    '死亡': ['死', '尸体', '葬礼', '坟墓'],
+                    '房子': ['家', '门', '窗', '屋子', '建筑'],
+                    '追逐': ['跑', '逃', '追', '赶'],
+                    '考试': ['测试', '学校', '老师', '学习']
+                };
+
+                return similarWords[symbol]?.some(word => text.includes(word)) || false;
+            }
+
+            generateAIInterpretation(description, symbols, emotion) {
+                const interpretations = [
+                    `您的梦境显示了内心深处的${emotion === 'fear' ? '恐惧' : emotion === 'joy' ? '喜悦' : '复杂情感'}。`,
+                    `梦中出现的${symbols.join('、')}象征着您当前生活状态的反映。`,
+                    `基于AI分析，这个梦境可能预示着您即将面临的心理变化。`,
+                    `您的潜意识正在通过这个梦境传达重要信息，建议您关注内心的声音。`,
+                    `这个梦境反映了您对现实生活中某些方面的思考和担忧。`
+                ];
+
+                return interpretations[Math.floor(Math.random() * interpretations.length)] +
+                       ` 梦境的清晰度表明您的潜意识活动${description.length > 100 ? '非常活跃' : '相对稳定'}。`;
+            }
+
+            generateTraditionalInterpretation(symbols) {
+                let interpretation = '根据传统周公解梦的智慧：';
+
+                symbols.forEach(symbol => {
+                    const meaning = this.traditionalMeanings[symbol];
+                    if (meaning) {
+                        interpretation += `${symbol}${meaning}；`;
+                    }
+                });
+
+                if (interpretation === '根据传统周公解梦的智慧：') {
+                    interpretation += '此梦寓意吉祥，预示着好运将至，事业顺利，家庭和睦。';
+                }
+
+                return interpretation;
+            }
+
+            generatePsychologyInterpretation(symbols, emotion) {
+                let interpretation = '从现代心理学角度分析：';
+
+                symbols.forEach(symbol => {
+                    const meaning = this.psychologyMeanings[symbol];
+                    if (meaning) {
+                        interpretation += `${meaning}；`;
+                    }
+                });
+
+                const emotionAnalysis = {
+                    'fear': '您可能正在处理一些内心的焦虑和不安',
+                    'joy': '您的心理状态较为积极，对生活充满希望',
+                    'sadness': '您可能需要处理一些未解决的情感问题',
+                    'anger': '您可能对某些情况感到不满或挫折',
+                    'calm': '您的心理状态相对平静，内心较为安定'
+                };
+
+                interpretation += ` ${emotionAnalysis[emotion] || '您的情感状态需要进一步关注和理解'}。`;
+
+                return interpretation;
+            }
+
+            calculateEmotionScores(emotion, dreamType) {
+                const baseScores = {
+                    positive: Math.floor(Math.random() * 30) + 50,
+                    stress: Math.floor(Math.random() * 40) + 20,
+                    mystery: Math.floor(Math.random() * 50) + 30
+                };
+
+                // 根据情感调整分数
+                if (emotion === 'joy') {
+                    baseScores.positive += 20;
+                    baseScores.stress -= 10;
+                } else if (emotion === 'fear') {
+                    baseScores.positive -= 20;
+                    baseScores.stress += 15;
+                    baseScores.mystery += 10;
+                }
+
+                // 根据梦境类型调整
+                if (dreamType === 'nightmare') {
+                    baseScores.stress += 20;
+                    baseScores.mystery += 15;
+                } else if (dreamType === 'lucid') {
+                    baseScores.positive += 15;
+                    baseScores.mystery += 20;
+                }
+
+                // 确保分数在合理范围内
+                Object.keys(baseScores).forEach(key => {
+                    baseScores[key] = Math.max(0, Math.min(100, baseScores[key]));
+                });
+
+                return baseScores;
+            }
+
+            displayAnalysis(analysis) {
+                document.getElementById('aiInterpretation').textContent = analysis.aiInterpretation;
+                document.getElementById('traditionalInterpretation').textContent = analysis.traditionalInterpretation;
+                document.getElementById('psychologyInterpretation').textContent = analysis.psychologyInterpretation;
+
+                // 显示符号
+                const symbolsContainer = document.getElementById('dreamSymbols');
+                symbolsContainer.innerHTML = '';
+                analysis.symbols.forEach(symbol => {
+                    const tag = document.createElement('span');
+                    tag.className = 'symbol-tag';
+                    tag.textContent = symbol;
+                    symbolsContainer.appendChild(tag);
+                });
+
+                // 显示情感分数
+                document.getElementById('positiveScore').textContent = analysis.emotionScores.positive + '%';
+                document.getElementById('stressScore').textContent = analysis.emotionScores.stress + '%';
+                document.getElementById('mysteryScore').textContent = analysis.emotionScores.mystery + '%';
+
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('analysisResult').classList.add('show');
+            }
+
+            saveDreamToHistory(description, dreamType, clarity, analysis) {
+                const dreamEntry = {
+                    id: Date.now(),
+                    date: new Date().toLocaleDateString('zh-CN'),
+                    description: description,
+                    dreamType: dreamType,
+                    clarity: clarity,
+                    emotion: this.selectedEmotion,
+                    analysis: analysis,
+                    preview: description.substring(0, 50) + (description.length > 50 ? '...' : '')
+                };
+
+                this.dreamHistory.unshift(dreamEntry);
+
+                // 只保留最近50个梦境记录
+                if (this.dreamHistory.length > 50) {
+                    this.dreamHistory = this.dreamHistory.slice(0, 50);
+                }
+
+                localStorage.setItem('dreamHistory', JSON.stringify(this.dreamHistory));
+                this.updateStats();
+                this.displayDreamHistory();
+            }
+
+            updateStats() {
+                const total = this.dreamHistory.length;
+                const happy = this.dreamHistory.filter(d => d.emotion === 'joy').length;
+                const nightmares = this.dreamHistory.filter(d => d.dreamType === 'nightmare').length;
+                const lucid = this.dreamHistory.filter(d => d.dreamType === 'lucid').length;
+
+                document.getElementById('totalDreams').textContent = total;
+                document.getElementById('happyDreams').textContent = happy;
+                document.getElementById('nightmares').textContent = nightmares;
+                document.getElementById('lucidDreams').textContent = lucid;
+            }
+
+            displayDreamHistory() {
+                const diaryGrid = document.getElementById('diaryGrid');
+                const diaryEmpty = document.getElementById('diaryEmpty');
+
+                if (this.dreamHistory.length === 0) {
+                    diaryEmpty.style.display = 'block';
+                    diaryGrid.style.display = 'none';
+                    return;
+                }
+
+                diaryEmpty.style.display = 'none';
+                diaryGrid.style.display = 'grid';
+
+                diaryGrid.innerHTML = '';
+
+                this.dreamHistory.forEach(dream => {
+                    const entry = document.createElement('div');
+                    entry.className = 'diary-entry';
+                    entry.innerHTML = `
+                        <div class="diary-date">${dream.date}</div>
+                        <div class="diary-preview">${dream.preview}</div>
+                        <div class="diary-emotion">${this.getEmotionText(dream.emotion)}</div>
+                    `;
+
+                    entry.addEventListener('click', () => {
+                        this.showDreamDetail(dream);
+                    });
+
+                    diaryGrid.appendChild(entry);
+                });
+            }
+
+            getEmotionText(emotion) {
+                const emotionMap = {
+                    'joy': '😊 快乐',
+                    'fear': '😨 恐惧',
+                    'sadness': '😢 悲伤',
+                    'anger': '😠 愤怒',
+                    'surprise': '😲 惊讶',
+                    'calm': '😌 平静',
+                    'excitement': '🤩 兴奋',
+                    'confusion': '😵 困惑'
+                };
+                return emotionMap[emotion] || '😐 中性';
+            }
+
+            showDreamDetail(dream) {
+                // 显示梦境详情（可以考虑添加模态框）
+                alert(`梦境日期：${dream.date}\n\n梦境描述：${dream.description}\n\nAI解析：${dream.analysis.aiInterpretation}`);
+            }
+
+            showLoading() {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('analysisResult').classList.remove('show');
+            }
+
+            hideLoading() {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        // 全局函数
+        function analyzeDream() {
+            dreamAnalyzer.analyzeDream();
+        }
+
+        function switchTab(tabName) {
+            // 移除所有活动状态
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // 激活选中的标签
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // 初始化应用
+        const dreamAnalyzer = new DreamAnalyzer();
+    </script>
+</body>
+</html>
