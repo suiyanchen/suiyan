@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片综合处理工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .feature-btn:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图片综合处理工具</h1>
+        <p>专业的在线图片处理平台，满足您的所有图片处理需求</p>
+    </div>
+
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card" onclick="window.location.href='compress.html'">
+                <div class="feature-icon">🗜️</div>
+                <h3>图片压缩</h3>
+                <p>智能压缩图片大小，保持高质量的同时大幅减少文件体积，支持多种格式</p>
+                <a href="compress.html" class="feature-btn">开始压缩</a>
+            </div>
+
+            <div class="feature-card" onclick="window.location.href='remove-bg.html'">
+                <div class="feature-icon">✂️</div>
+                <h3>抠图去背景</h3>
+                <p>AI智能识别主体，一键去除图片背景，支持透明背景和自定义背景替换</p>
+                <a href="remove-bg.html" class="feature-btn">开始抠图</a>
+            </div>
+
+            <div class="feature-card" onclick="window.location.href='recognize.html'">
+                <div class="feature-icon">🔍</div>
+                <h3>图片识别</h3>
+                <p>AI图像识别技术，识别图片中的物体、文字、场景等信息，准确率高</p>
+                <a href="recognize.html" class="feature-btn">开始识别</a>
+            </div>
+
+            <div class="feature-card" onclick="window.location.href='ai-generate.html'">
+                <div class="feature-icon">🎨</div>
+                <h3>AI生图</h3>
+                <p>基于文本描述生成高质量图片，支持多种艺术风格和创意表达</p>
+                <a href="ai-generate.html" class="feature-btn">开始生成</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 图片综合处理工具. All rights reserved.</p>
+    </div>
+</body>
+</html>

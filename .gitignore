@@ -26,4 +26,7 @@ Library/
 Movies/
 Music/
 Pictures/
-Public/
+Public/.ssh/
+.docker/
+image01/
+nextjs-boilerplate/
